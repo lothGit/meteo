@@ -75,4 +75,63 @@ export default function Home() {
       </main>
     </div>
   );
+
+  /*
+const [age, setAge] = useState(null);
+useEffect(() => {
+const fetchAge = async () => {
+const response = await fetch('https://api.agify.io?name=john');
+const data = await response.json();
+setAge(data.age);
+console.log(data)
+};
+
+const fetchElevation=async ()=>{
+const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.4');
+const data = await response.json();
+console.log(data)
+}
+
+  fetchAge();
+  fetchElevation()
+
+}, []);
+  
+  return(<div>Age estimé pour John : {age}</div>)*/
+
+
+
+  /*useEffect(() => {
+    const getDataOenMeteo = async () => {
+      const res = await fetch("api/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cityInput }),
+      });
+      const data = await res.json();
+      //setWeatherData({ ...data });
+      setCityInput("");
+      console.log(data)
+    };
+    getDataOenMeteo();
+  }, [triggerFetch]);*/
+
+
+
+  {
+          //console.log(weatherDataOpen)
+          //console.log(weatherDataOpen.current.temperature_2m)
+          //console.log(weatherDataOpen.current.wind_speed_10m)
+          //console.log(weatherDataOpen.hourly.relative_humidity_2m)
+          //console.log(weatherDataOpen.daily.sunrise)
+          //console.log(weatherDataOpen.daily.sunset)
+          //console.log(weatherDataOpen.hourly.visiblity)
+          //console.log(weatherDataOpen.current.wind_direction_10m)
+          //console.log(weatherDataOpen.current.relative_humidity_2m)
+        }
+
+
+
+
+
 }
