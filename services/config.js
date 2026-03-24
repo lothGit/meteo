@@ -9,8 +9,8 @@
     latitude: 52.52,
     longitude: 13.41,
     lastDataUpdateTime: "",
-    timezone: 3600,
-    currentTime: 1774190066,
+    timezone: 7200,
+    currentTime: 1774293470,
     numbUpdate:10,
     frequencyTimer:5000
   };

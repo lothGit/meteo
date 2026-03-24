@@ -29,13 +29,13 @@ export const MainCard = ({
           : Math.round(ctoF(weatherData.main.temp))}
         °{unitSystem == "metric" ? "C" : "F"}
       </h1>*/}
-      {/*<h1 className={styles.temperature}>
+      <h1 className={styles.temperature}>
        {unitSystem == "metric"
-          ? Math.round(weatherDataOpen.current.temperature_2m)
-          : Math.round(ctoF(weatherDataOpen.current.temperature_2m))}
+          ? Math.round(weatherData.current.temperature_2m)
+          : Math.round(ctoF(weatherData.current.temperature_2m))}
         °{unitSystem == "metric" ? "C" : "F"}
       </h1>
-      <p>
+      {/*<p>
         Feels like{" "}
         {unitSystem == "metric"
           ? Math.round(weatherData.main.feels_like)

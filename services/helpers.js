@@ -39,3 +39,8 @@ export const getWeekDay = (weatherData) => {
     new Date((weatherData.current.time + weatherData.timezone) * 1000).getUTCDay()
   ];
 };
+
+export const getTimeSpan = (dateTime)=>{
+  let createdDateTime = new Date(dateTime);
+  return createdDateTime.getTime().toString().substring(0, 10);
+}

@@ -10,6 +10,7 @@ import { UnitSwitch } from "../components/UnitSwitch";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { ErrorScreen } from "../components/ErrorScreen";
 import { meteoService } from "../services/meteo.service";
+import { getTimeSpan } from "../services/helpers";
 import { dataCity } from "../services/config";
 import styles from "../styles/Home.module.css";
 
@@ -19,37 +20,32 @@ export const App = () => {
   const [weatherData, setWeatherData] = useState();
   const [unitSystem, setUnitSystem] = useState("metric");
   const [weatherDataOpen, setWeatherDataOpen] = useState([]);
-  const [coordCity, setCoordCity] = useState({
-    city: "Berlin",
-    country: "DE",
-    latitude: 52.52,
-    longitude: 13.41,
-    lastDataUpdateTime: "",
-    timezone: 3600,
-    currentTime: 1774190066,
-  });
+  
 
   const flag = useRef(false);
 
   var dataOpen = new Object();
 
+ 
   /*************data initialization********************************/
   useEffect(() => {
     console.log(dataCity)
     if (flag.current === false) {
       if (localStorage.getItem("openMeteo") != null) {
         const data = JSON.parse(localStorage.getItem("openMeteo"));
-        data.current.time = dataCity.currentTime;
+        //data.current.time = dataCity.currentTime;
+        data.current.time= parseInt(getTimeSpan(data.current.time))
         data.timezone = dataCity.timezone;
         setWeatherData(data);
-        console.log(JSON.parse(localStorage.getItem("openMeteo")));
       } else {
         meteoService
-          .getMeteoData()
+          .getMeteoData(dataCity.latitude,dataCity.longitude)
           .then((res) => {
             localStorage.setItem("openMeteo", JSON.stringify(res));
             const data =  JSON.parse(localStorage.getItem("openMeteo"));
-            data.current.time = dataCity.currentTime;
+            dataCity.currentTime=parseInt(getTimeSpan(data.current.time))
+            //data.current.time = dataCity.currentTime;
+            data.current.time= parseInt(getTimeSpan(data.current.time))
             data.timezone = dataCity.timezone;
             setWeatherData(data);
           })
@@ -68,15 +64,17 @@ export const App = () => {
       let timer=5000;
     setTimeout(() => {
       meteoService
-        .getMeteoData()
+        .getMeteoData(dataCity.latitude,dataCity.longitude)
         .then((res) => {
+          
           localStorage.removeItem("openMeteo");
           localStorage.setItem("openMeteo", JSON.stringify(res));
           const data=  JSON.parse(localStorage.getItem("openMeteo"))
-          data.current.time = dataCity.currentTime;
+          let timespan=parseInt(getTimeSpan(data.current.time))
+          //dataCity.currentTime=getTimeSpan(data.current.time)
+          data.current.time = timespan //dataCity.currentTime;
           data.timezone = dataCity.timezone;
           setWeatherData(data);
-          console.log("api:"+ timer);
         })
         .catch((err) => console.log(err));
     }, dataCity.frequencyTimer*i);
@@ -93,8 +91,8 @@ export const App = () => {
   return weatherData && !weatherData.message ? (
     <div className={styles.wrapper}>
       <MainCard
-        city={coordCity.city}
-        country={coordCity.country}
+        city={dataCity.city}
+        country={dataCity.country}
         description={"weatherData.weather[0].description"}
         iconName={"01d"}
         unitSystem={unitSystem}
@@ -104,19 +102,6 @@ export const App = () => {
       <ContentBox>
         <Header>
           <DateAndTime weatherData={weatherData} unitSystem={unitSystem} />
-          {/* <Search
-            placeHolder="Search a city..."
-            value={cityInput}
-            onFocus={(e) => {
-              e.target.value = "";
-              e.target.placeholder = "";
-            }}
-            onChange={(e) => setCityInput(e.target.value)}
-            onKeyDown={(e) => {
-              e.keyCode === 13 && setTriggerFetch(!triggerFetch);
-              e.target.placeholder = "Search a city...";
-            }}
-          />*/}
         </Header>
         <MetricsBox
           weatherData={weatherData}

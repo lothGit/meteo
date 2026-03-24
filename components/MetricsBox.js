@@ -9,10 +9,9 @@ import { MetricsCard } from "./MetricsCard";
 import styles from "./MetricsBox.module.css";
 
 export const MetricsBox = ({ weatherData, unitSystem ,weatherDataOpen}) => {
-//weatherDataOpen.hourly.relative_humidity_2m=12
   return (
     <div className={styles.wrapper}>
-     {/* <MetricsCard
+      <MetricsCard
         title={"Humidity"}
         iconSrc={"/icons/humidity.png"}
         metric={weatherData.current.relative_humidity_2m}
@@ -35,7 +34,7 @@ export const MetricsBox = ({ weatherData, unitSystem ,weatherDataOpen}) => {
         metric={getVisibility(unitSystem, weatherData.current.visibility)}
         unit={unitSystem == "metric" ? "km" : "miles"}
       />
-      <MetricsCard
+      {/*<MetricsCard
         title={"Sunrise"}
         iconSrc={"/icons/sunrise.png"}
         metric={getTime(
