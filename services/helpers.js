@@ -42,5 +42,5 @@ export const getWeekDay = (weatherData) => {
 
 export const getTimeSpan = (dateTime)=>{
   let createdDateTime = new Date(dateTime);
-  return createdDateTime.getTime().toString().substring(0, 10);
+  return parseInt(createdDateTime.getTime().toString().substring(0, 10));
 }

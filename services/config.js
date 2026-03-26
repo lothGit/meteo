@@ -11,7 +11,7 @@
     lastDataUpdateTime: "",
     timezone: 7200,
     currentTime: 1774293470,
-    numbUpdate:10,
+    numbUpdate:4,
     frequencyTimer:5000
   };
 

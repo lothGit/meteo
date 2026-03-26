@@ -4,11 +4,12 @@ import {
   getAMPM,
   getVisibility,
   getWindSpeed,
+  getTimeSpan,
 } from "../services/helpers";
 import { MetricsCard } from "./MetricsCard";
 import styles from "./MetricsBox.module.css";
 
-export const MetricsBox = ({ weatherData, unitSystem ,weatherDataOpen}) => {
+export const MetricsBox = ({ weatherData, unitSystem }) => {
   return (
     <div className={styles.wrapper}>
       <MetricsCard
@@ -34,17 +35,17 @@ export const MetricsBox = ({ weatherData, unitSystem ,weatherDataOpen}) => {
         metric={getVisibility(unitSystem, weatherData.current.visibility)}
         unit={unitSystem == "metric" ? "km" : "miles"}
       />
-      {/*<MetricsCard
+      <MetricsCard
         title={"Sunrise"}
         iconSrc={"/icons/sunrise.png"}
         metric={getTime(
           unitSystem,
-          weatherData.sys.sunrise,
+          getTimeSpan(weatherData.daily.sunrise[0]),
           weatherData.timezone
         )}
         unit={getAMPM(
           unitSystem,
-          weatherData.sys.sunrise,
+          getTimeSpan(weatherData.daily.sunrise[0]),
           weatherData.timezone
         )}
       />
@@ -53,11 +54,11 @@ export const MetricsBox = ({ weatherData, unitSystem ,weatherDataOpen}) => {
         iconSrc={"/icons/sunset.png"}
         metric={getTime(
           unitSystem,
-          weatherData.sys.sunset,
+          getTimeSpan(weatherData.daily.sunset[0]),
           weatherData.timezone
         )}
-        unit={getAMPM(unitSystem, weatherData.sys.sunset, weatherData.timezone)}
-      />*/}
+        unit={getAMPM(unitSystem, getTimeSpan(weatherData.daily.sunset[0]), weatherData.timezone)}
+      />*
     </div>
   );
 };

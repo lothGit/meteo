@@ -8,8 +8,7 @@ export const MainCard = ({
   description,
   iconName,
   unitSystem,
-  weatherData,
-  weatherDataOpen
+  weatherData
 }) => {
   return (
     <div className={styles.wrapper}>
@@ -23,12 +22,6 @@ export const MainCard = ({
         src={`/icons/${iconName}.svg`}
         alt="weatherIcon"
       />
-      {/*<h1 className={styles.temperature}>
-        {unitSystem == "metric"
-          ? Math.round(weatherData.main.temp)
-          : Math.round(ctoF(weatherData.main.temp))}
-        °{unitSystem == "metric" ? "C" : "F"}
-      </h1>*/}
       <h1 className={styles.temperature}>
        {unitSystem == "metric"
           ? Math.round(weatherData.current.temperature_2m)

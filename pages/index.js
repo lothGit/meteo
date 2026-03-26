@@ -19,33 +19,27 @@ export const App = () => {
   const [triggerFetch, setTriggerFetch] = useState(true);
   const [weatherData, setWeatherData] = useState();
   const [unitSystem, setUnitSystem] = useState("metric");
-  const [weatherDataOpen, setWeatherDataOpen] = useState([]);
-  
+  const [reset, setReset] = useState(true);
 
   const flag = useRef(false);
 
   var dataOpen = new Object();
 
- 
   /*************data initialization********************************/
   useEffect(() => {
-    console.log(dataCity)
     if (flag.current === false) {
       if (localStorage.getItem("openMeteo") != null) {
         const data = JSON.parse(localStorage.getItem("openMeteo"));
-        //data.current.time = dataCity.currentTime;
-        data.current.time= parseInt(getTimeSpan(data.current.time))
+        data.current.time = parseInt(getTimeSpan(data.current.time));
         data.timezone = dataCity.timezone;
         setWeatherData(data);
       } else {
         meteoService
-          .getMeteoData(dataCity.latitude,dataCity.longitude)
+          .getMeteoData(dataCity.latitude, dataCity.longitude)
           .then((res) => {
             localStorage.setItem("openMeteo", JSON.stringify(res));
-            const data =  JSON.parse(localStorage.getItem("openMeteo"));
-            dataCity.currentTime=parseInt(getTimeSpan(data.current.time))
-            //data.current.time = dataCity.currentTime;
-            data.current.time= parseInt(getTimeSpan(data.current.time))
+            const data = JSON.parse(localStorage.getItem("openMeteo"));
+            data.current.time = getTimeSpan(data.current.time);
             data.timezone = dataCity.timezone;
             setWeatherData(data);
           })
@@ -56,32 +50,30 @@ export const App = () => {
   }, []);
 
   /***************periodic data updates***************** */
-  //let eventTracked = false;
+  
   useEffect(() => {
-    let i=1;
-    let numbUpdate=10;
-    while(i<dataCity.numbUpdate){
-      let timer=5000;
-    setTimeout(() => {
-      meteoService
-        .getMeteoData(dataCity.latitude,dataCity.longitude)
-        .then((res) => {
-          
-          localStorage.removeItem("openMeteo");
-          localStorage.setItem("openMeteo", JSON.stringify(res));
-          const data=  JSON.parse(localStorage.getItem("openMeteo"))
-          let timespan=parseInt(getTimeSpan(data.current.time))
-          //dataCity.currentTime=getTimeSpan(data.current.time)
-          data.current.time = timespan //dataCity.currentTime;
-          data.timezone = dataCity.timezone;
-          setWeatherData(data);
-        })
-        .catch((err) => console.log(err));
-    }, dataCity.frequencyTimer*i);
-    i++;
-  }
+    let i = 1;
+    while (i < dataCity.numbUpdate) {
+      
+        setTimeout(() => {
+          meteoService
+            .getMeteoData(dataCity.latitude, dataCity.longitude)
+            .then((res) => {
+              localStorage.removeItem("openMeteo");
+              localStorage.setItem("openMeteo", JSON.stringify(res));
+              const data = JSON.parse(localStorage.getItem("openMeteo"));
+              let timespan = getTimeSpan(data.current.time);
+              data.current.time = timespan;
+              data.timezone = dataCity.timezone;
+              setWeatherData(data);
+              console.log(i);
+            })
+            .catch((err) => console.log(err));
+        }, dataCity.frequencyTimer * i);
+        i++;
+    }
+    return () => (flag.current = true);
   }, []);
-  //eventTracked = true;
 
   const changeSystem = () =>
     unitSystem == "metric"
@@ -90,6 +82,7 @@ export const App = () => {
 
   return weatherData && !weatherData.message ? (
     <div className={styles.wrapper}>
+      {console.log(weatherData)}
       <MainCard
         city={dataCity.city}
         country={dataCity.country}
@@ -97,18 +90,13 @@ export const App = () => {
         iconName={"01d"}
         unitSystem={unitSystem}
         weatherData={weatherData}
-        weatherDataOpen={weatherDataOpen}
       />
       <ContentBox>
         <Header>
           <DateAndTime weatherData={weatherData} unitSystem={unitSystem} />
         </Header>
-        <MetricsBox
-          weatherData={weatherData}
-          unitSystem={unitSystem}
-          weatherDataOpen={weatherDataOpen}
-        />
-        {/*<UnitSwitch onClick={changeSystem} unitSystem={unitSystem} />*/}
+        <MetricsBox weatherData={weatherData} unitSystem={unitSystem} />
+        <UnitSwitch onClick={changeSystem} unitSystem={unitSystem} />
       </ContentBox>
     </div>
   ) : weatherData && weatherData.message ? (
