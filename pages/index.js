@@ -23,7 +23,21 @@ export const App = () => {
 
   const flag = useRef(false);
 
-  var dataOpen = new Object();
+  /***************Api Weather meteo****************************/
+  useEffect(() => {
+    const getData = async () => {
+      const res = await fetch("api/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cityInput }),
+      });
+      const data = await res.json();
+      //setWeatherData({ ...data });
+      setCityInput("");
+      console.log(data);
+    };
+    getData();
+  }, [triggerFetch]);
 
   /*************data initialization********************************/
   useEffect(() => {
@@ -50,30 +64,29 @@ export const App = () => {
   }, []);
 
   /***************periodic data updates***************** */
-  
-  useEffect(() => {
-    let i = 1;
-    while (i < dataCity.numbUpdate) {
-      
-        setTimeout(() => {
-          meteoService
-            .getMeteoData(dataCity.latitude, dataCity.longitude)
-            .then((res) => {
-              localStorage.removeItem("openMeteo");
-              localStorage.setItem("openMeteo", JSON.stringify(res));
-              const data = JSON.parse(localStorage.getItem("openMeteo"));
-              let timespan = getTimeSpan(data.current.time);
-              data.current.time = timespan;
-              data.timezone = dataCity.timezone;
-              setWeatherData(data);
-              console.log(i);
-            })
-            .catch((err) => console.log(err));
-        }, dataCity.frequencyTimer * i);
-        i++;
+
+  const getMeteoData = () => {
+    meteoService
+      .getMeteoData(dataCity.latitude, dataCity.longitude)
+      .then((res) => {
+        localStorage.removeItem("openMeteo");
+        localStorage.setItem("openMeteo", JSON.stringify(res));
+        const data = JSON.parse(localStorage.getItem("openMeteo"));
+        let timespan = getTimeSpan(data.current.time);
+        data.current.time = timespan;
+        data.timezone = dataCity.timezone;
+        setWeatherData(data);
+        console.log(i);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  /*useEffect(() => {
+    if (flag.current === false) {
+      setInterval(getMeteoData, dataCity.frequencyTimer);
     }
     return () => (flag.current = true);
-  }, []);
+  }, []);*/
 
   const changeSystem = () =>
     unitSystem == "metric"
@@ -86,7 +99,7 @@ export const App = () => {
       <MainCard
         city={dataCity.city}
         country={dataCity.country}
-        description={"weatherData.weather[0].description"}
+        description={""}
         iconName={"01d"}
         unitSystem={unitSystem}
         weatherData={weatherData}
