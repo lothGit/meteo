@@ -15,47 +15,55 @@ import { dataCity } from "../services/config";
 import styles from "../styles/Home.module.css";
 
 export const App = () => {
-  const [cityInput, setCityInput] = useState("Berlin");
+  const [cityInput, setCityInput] = useState("Paris");
+  const [cityLat, setCityLat] = useState();
+  const [cityLong, setCityLong] = useState();
+  
   const [triggerFetch, setTriggerFetch] = useState(true);
   const [weatherData, setWeatherData] = useState();
   const [unitSystem, setUnitSystem] = useState("metric");
   const [reset, setReset] = useState(true);
+  var latitude = 1;
 
   const flag = useRef(false);
 
-  /***************Api Weather meteo****************************/
-  useEffect(() => {
-    const getData = async () => {
-      const res = await fetch("api/data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cityInput }),
-      });
-      const data = await res.json();
-      //setWeatherData({ ...data });
-      setCityInput("");
-      console.log(data);
-    };
-    getData();
-  }, [triggerFetch]);
-
   /*************data initialization********************************/
   useEffect(() => {
+     meteoService
+          .getGeoCoding(dataCity.city)
+          .then((res) => {
+            console.log(res)
+            dataCity.latitude = res.results[0].latitude;
+            dataCity.longitude = res.results[0].longitude;
+            dataCity.country=res.results[0].country_code
+            latitude=res.results[0].latitude;
+          })
+          .catch((err) => console.log(err));
+
     if (flag.current === false) {
       if (localStorage.getItem("openMeteo") != null) {
         const data = JSON.parse(localStorage.getItem("openMeteo"));
         data.current.time = parseInt(getTimeSpan(data.current.time));
         data.timezone = dataCity.timezone;
-        setWeatherData(data);
+        setWeatherData({...data});
       } else {
         meteoService
-          .getMeteoData(dataCity.latitude, dataCity.longitude)
+          .getGeoCoding(dataCity.city)
           .then((res) => {
-            localStorage.setItem("openMeteo", JSON.stringify(res));
-            const data = JSON.parse(localStorage.getItem("openMeteo"));
-            data.current.time = getTimeSpan(data.current.time);
-            data.timezone = dataCity.timezone;
-            setWeatherData(data);
+            dataCity.latitude = res.results[0].latitude;
+            dataCity.longitude = res.results[0].longitude;
+            dataCity.country = res.results[0].country_code;
+
+            meteoService
+              .getMeteoData(dataCity.latitude, dataCity.longitude)
+              .then((res) => {
+                localStorage.setItem("openMeteo", JSON.stringify(res));
+                const data = JSON.parse(localStorage.getItem("openMeteo"));
+                data.current.time = getTimeSpan(data.current.time);
+                data.timezone = dataCity.timezone;
+                setWeatherData({...data});
+              })
+              .catch((err) => console.log(err));
           })
           .catch((err) => console.log(err));
       }
@@ -67,26 +75,37 @@ export const App = () => {
 
   const getMeteoData = () => {
     meteoService
-      .getMeteoData(dataCity.latitude, dataCity.longitude)
+      .getGeoCoding(dataCity.city)
       .then((res) => {
-        localStorage.removeItem("openMeteo");
-        localStorage.setItem("openMeteo", JSON.stringify(res));
-        const data = JSON.parse(localStorage.getItem("openMeteo"));
-        let timespan = getTimeSpan(data.current.time);
-        data.current.time = timespan;
-        data.timezone = dataCity.timezone;
-        setWeatherData(data);
-        console.log(i);
+        dataCity.latitude = res.results[0].latitude;
+        dataCity.longitude = res.results[0].longitude;
+        dataCity.country = res.results[0].country_code;
+
+        meteoService
+          .getMeteoData(dataCity.latitude, dataCity.longitude)
+          .then((res) => {
+            localStorage.removeItem("openMeteo");
+            localStorage.setItem("openMeteo", JSON.stringify(res));
+            const data = JSON.parse(localStorage.getItem("openMeteo"));
+            let timespan = getTimeSpan(data.current.time);
+            data.current.time = timespan;
+            data.timezone = dataCity.timezone;
+            setWeatherData(data);
+            
+          })
+          .catch((err) => console.log(err));
+          
       })
       .catch((err) => console.log(err));
   };
 
-  /*useEffect(() => {
+ useEffect(() => {
+   
     if (flag.current === false) {
       setInterval(getMeteoData, dataCity.frequencyTimer);
     }
     return () => (flag.current = true);
-  }, []);*/
+  }, []);
 
   const changeSystem = () =>
     unitSystem == "metric"
@@ -95,7 +114,7 @@ export const App = () => {
 
   return weatherData && !weatherData.message ? (
     <div className={styles.wrapper}>
-      {console.log(weatherData)}
+      {/*console.log(weatherData)*/}
       <MainCard
         city={dataCity.city}
         country={dataCity.country}
